@@ -1,0 +1,6 @@
+publiclab/
+lab1/
+__pycache__/
+llama.log
+models/
+myenv/
