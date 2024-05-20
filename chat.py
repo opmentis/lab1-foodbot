@@ -111,45 +111,32 @@ def Gpt4all(apimessage):
 def initiate_chat(wallet_address: str, function):
     global response_messages  # Declare response_messages as global to modify it within the function
     try:
-        # Initialize a counter for the number of responses received
-        response_count = 0
+   
+        chat_message = function(apimessage=response_messages)
 
-        # Run the loop until 4 responses are received
-        while response_count < 5:
-            # Generate chat message
+        # If the chosen function is Gpt4all, extract the text from the response
+        if functionname == "Gpt4all":
+            
+            chat_message = chat_message['text']
 
-               
-            chat_message = function(apimessage=response_messages)
+        # Send chat message and wallet address to another endpoint
+        response = requests.post("http://54.74.133.71/chat", json={"wallet_address": wallet_address, "prompt": chat_message})
 
-            # If the chosen function is Gpt4all, extract the text from the response
-            if functionname == "Gpt4all":
-              
-                chat_message = chat_message['text']
+        # Check response status
+        try:
+            if response.status_code == 200:
+                response_json = response.json()
 
-            # Send chat message and wallet address to another endpoint
-            response = requests.post("http://54.74.133.71/chat", json={"wallet_address": wallet_address, "prompt": chat_message})
+                response_messages = [item["response"] for item in response_json if item is not None]
+                
 
-            # Check response status
-            try:
-                if response.status_code == 200:
-                    response_json = response.json()
+                # Print the main message received
+                if response_messages:  # Check if response_messages is not empty
+                    print("Response:", response_messages[0])  # Print the first element if available
 
-                    response_messages = [item["response"] for item in response_json if item is not None]
-                   
-
-                    # Update the counter
-                    response_count += 1
-
-                    # Print the main message received
-                    if response_messages:  # Check if response_messages is not empty
-                        print("Response:", response_messages[0])  # Print the first element if available
-
-                    # If the counter reaches 4, break the loop
-                    if response_count == 5:
-                        break
-            except Exception as e:
-                print("Error:", e)  # Print the exception message
-                raise HTTPException(status_code=500, detail="Failed to initiate chat")
+        except Exception as e:
+            print("Error:", e)  # Print the exception message
+            raise HTTPException(status_code=500, detail="Failed to initiate chat")
 
         
         return {"message": "Chat initiated successfully", "response": response_messages}
@@ -183,7 +170,5 @@ if __name__ == "__main__":
 
 
 
-# Example usage
-# print(initiate_chat("55walletadd"))
 
 

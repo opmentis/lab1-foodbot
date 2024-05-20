@@ -39,6 +39,17 @@ miner_wallet_address = "miner_wallet_address"
 miner = register_miners(wallet_address=miner_wallet_address)
 print("Miner Registered:", miner)
 ```
+### Check your data
+To check miners data:
+
+```python
+from opmentis import userdata
+
+# Example: check miners data
+miner_wallet_address = "miner_wallet_address"
+userdata(wallet_address=miner_wallet_address)
+
+```
 
 4. If you're using a Gpt4all model other than the default one, download the model file from https://gpt4all.io/index.html and place it in the `models` folder.
 
