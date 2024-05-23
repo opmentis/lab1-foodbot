@@ -62,7 +62,7 @@ print(data)
 
 ### 1. Python Script
 
-Run the `chat.py` script with the appropriate arguments to initiate the chatbot: ```cd to Lab1_Public``` folder 
+Run the `chat.py` script with the appropriate arguments to initiate the chatbot: ```cd to lab1-foodbot``` folder 
 
 python chat.py --function [Function_Name] --api_key [OpenAI_API_Key] --wallet_address [Wallet_Address]
 
