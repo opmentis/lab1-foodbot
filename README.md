@@ -47,7 +47,8 @@ from opmentis import userdata
 
 # Example: check miners data
 miner_wallet_address = "miner_wallet_address"
-userdata(wallet_address=miner_wallet_address)
+data = userdata(wallet_address=miner_wallet_address)
+print(data)
 
 ```
 
