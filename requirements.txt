@@ -4,3 +4,8 @@ fastapi
 # llama-cpp-python==0.1.85
 langchain
 opmentis
+langchain-community
+langchain-core
+langchain-openai
+chromadb
+tabulate

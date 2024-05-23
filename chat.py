@@ -111,39 +111,34 @@ def Gpt4all(apimessage):
 def initiate_chat(wallet_address: str, function):
     global response_messages  # Declare response_messages as global to modify it within the function
     try:
-   
-        chat_message = function(apimessage=response_messages)
+         while True:  # Loop to continuously send and receive messages
+            chat_message = function(apimessage=response_messages)
 
-        # If the chosen function is Gpt4all, extract the text from the response
-        if functionname == "Gpt4all":
-            
-            chat_message = chat_message['text']
+            # If the chosen function is Gpt4all, extract the text from the response
+            if function.__name__ == "Gpt4all":
+                chat_message = chat_message['text']
 
-        # Send chat message and wallet address to another endpoint
-        response = requests.post("http://54.74.133.71/chat", json={"wallet_address": wallet_address, "prompt": chat_message})
+            # Send chat message and wallet address to another endpoint
+            response = requests.post("http://54.74.133.71/chat", json={"wallet_address": wallet_address, "prompt": chat_message})
 
-        # Check response status
-        try:
+            # Check response status and handle the response
             if response.status_code == 200:
                 response_json = response.json()
 
                 response_messages = [item["response"] for item in response_json if item is not None]
                 
-
                 # Print the main message received
                 if response_messages:  # Check if response_messages is not empty
                     print("Response:", response_messages[0])  # Print the first element if available
+            else:
+                print("Failed to send chat message, status code:", response.status_code)
+                break  # Exit the loop if the response is not successful
 
-        except Exception as e:
-            print("Error:", e)  # Print the exception message
-            raise HTTPException(status_code=500, detail="Failed to initiate chat")
-
-        
-        return {"message": "Chat initiated successfully", "response": response_messages}
-        
     except Exception as e:
+        print("Error:", e)  # Print the exception message
         raise HTTPException(status_code=500, detail=str(e))
 
+    return {"message": "Chat session ended", "response": response_messages}
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--function', choices=['Openai', 'llama', 'Gpt4all'], required=True, help='Choose the function to execute.')
