@@ -13,9 +13,10 @@ This project implements a chatbot using various natural language processing mode
 
 1. Clone this repository to your local machine.
 
-2. Install the required Python packages by running:
-Run the bash file ```setup.sh``` to download the llama model from Gpt4all script for mac and ubuntu users else run ``` pip install -r requirements.txt ```
-   
+2. To install the required Python packages, follow these steps:
+
+If you prefer not to download the llama model, simply run ```pip install -r requirements.txt``` to install the necessary packages from the requirements file.
+For Mac and Ubuntu users who wish to download the llama model, execute the ```setup.sh``` bash script which uses the Gpt4all script for installation.
 
  to install required dependencies and download the default Gpt4all model:
 
