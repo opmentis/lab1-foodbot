@@ -14,11 +14,9 @@ This project implements a chatbot using various natural language processing mode
 1. Clone this repository to your local machine.
 
 2. Install the required Python packages by running:
-Run the bash script for mac and ubuntu users
+Run the bash file ```setup.sh``` to download the llama model from Gpt4all script for mac and ubuntu users else run ``` pip install -r requirements.txt ```
    
-    ```
-    setup.sh 
-    ```
+
  to install required dependencies and download the default Gpt4all model:
 
 3. Install the Opmentis package:
