@@ -51,7 +51,7 @@ data = userdata(wallet_address=miner_wallet_address)
 print(data)
 
 ```
-4. If you want to end the chat and start a new session whenever you want by handling a signal, you can include the following code in chat.py:
+4. If you want to end the chat and start a new session whenever you want by handling a signal(ctr+c), you can include the following code in chat.py:
 
 ```python
 import signal
@@ -63,7 +63,14 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 ```
-Alternatively, you can use this code in a separate script to start a new chat session. This way, the chat will end and a new session will start whenever the specified signal is received.
+Alternatively, you can use this code in a separate script to start a new chat session. This way, the chat will end and a new session will start whenever the script is called 
+
+```python
+from opmentis import  endchat, userdata
+
+
+print(endchat())
+```
 
 5. If you're using a Gpt4all model other than the default one, download the model file from https://gpt4all.io/index.html and place it in the `models` folder.
 
