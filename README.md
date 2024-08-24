@@ -11,20 +11,46 @@ This project implements a chatbot using various natural language processing mode
 
 ## Setup
 
-1. Clone this repository to your local machine.
+1. Clone this repository to your local machine:
 
+   ```bash
+   cd cloned-repo
 2. To install the required Python packages, follow these steps:
 
-If you prefer not to download the llama model, simply run ```pip install -r requirements.txt``` to install the necessary packages from the requirements file.
-For Mac and Ubuntu users who wish to download the llama model, execute the ```setup.sh``` bash script which uses the Gpt4all script for installation.
-
- to install required dependencies and download the default Gpt4all model:
-
-3. Install the Opmentis package:
-To facilitate user registration functionalities within the chatbot, install the opmentis package using pip:
+Without downloading the Llama model:
+If you prefer not to download the Llama model, simply run:
 ```bash
-pip install opmentis
+pip install -r requirements.txt
 ```
+This will install the necessary packages listed in the requirements.txt file.
+
+With Gpt4all model download (Mac and Ubuntu users):
+For users who wish to download the Gpt4all model and set up shell completion, execute the setup.sh script. This will handle the installation of required dependencies and download the default Gpt4all model:
+```bash
+./setup.sh
+```
+Ensure that the script has executable permissions before running it. If you encounter a "permission denied" error, run the following command:
+```bash
+chmod +x setup.sh
+```
+Then, rerun the script:
+```bash
+./setup.sh
+```
+3. Downloading the Gpt4all model separately:
+If you only want to download the Gpt4all model without setting up the other environment configurations, you can run the download_model.sh script:
+```bash
+./download_model.sh
+```
+
+As with the setup.sh script, ensure the download_model.sh script has executable permissions:
+
+```bash
+chmod +x download_model.sh
+./download_model.sh
+```
+
+
 # Usage
 
 ### Registering a Miner
@@ -78,20 +104,25 @@ print(endchat())
 
 ## Running the Scripts
 
-
-
 ### 1. Python Script
 
-Run the `chat.py` script with the appropriate arguments to initiate the chatbot: ```cd to lab1-foodbot``` folder 
+Run the `chat.py` script with the appropriate arguments to initiate the chatbot:
 
-python chat.py --function [Function_Name] --api_key [OpenAI_API_Key] --wallet_address [Wallet_Address]
+```bash
+cd to lab1-foodbot
 
-python chat.py --function Gpt4all --wallet_address 55walletaddress
+run the below help to see what you need to start the script
+python chat.py --help
+
+python chat.py [Function_Name] [Wallet_Address] --api_key [OpenAI_API_Key]
 
 
+python chat.py Openai 0xYourWalletAddress --api_key sk-YourOpenAIAPIKey
 
 
-Replace `[Function_Name]` with one of the available models: `Openai`, `llama`, or `Gpt4all`. Provide the OpenAI API key if using the OpenAI model.
+python chat.py Gpt4all 0xYourWalletAddress
+```
+
 
 ## Available Models
 

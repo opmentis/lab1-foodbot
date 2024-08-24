@@ -1,46 +1,43 @@
 #!/bin/bash
 
-# Function to install wget on Ubuntu
-install_wget_ubuntu() {
-    sudo apt-get update
-    sudo apt-get install -y wget
-}
-
-# Function to install wget on macOS
-install_wget_mac() {
-    brew install wget
-}
-
-# Check if wget is installed
-if ! command -v wget &> /dev/null; then
-    echo "wget is not installed. Installing..."
-    # Check the operating system
-    os=$(uname)
-    if [ "$os" = "Linux" ]; then
-        echo "Detected Linux (assuming Ubuntu)"
-        install_wget_ubuntu
-    elif [ "$os" = "Darwin" ]; then
-        echo "Detected macOS"
-        install_wget_mac
-    else
-        echo "Unsupported operating system: $os"
-        exit 1
-    fi
-fi
-
-# Create models directory if it doesn't exist
-mkdir -p models
-
-# Check if the model file already exists
-if [ ! -f models/gpt4all-13b-snoozy-q4_0.gguf ]; then
-    echo "Downloading model file..."
-    wget https://gpt4all.io/models/gguf/gpt4all-13b-snoozy-q4_0.gguf -P models/
-else
-    echo "Model file already exists. Skipping download."
-fi
-
 # Install Python dependencies
 pip install -r requirements.txt
 
 # Upgrade or install gpt4all package
 pip install --upgrade --quiet gpt4all
+
+# Shell completion setup
+
+# Detect the shell
+shell=$(basename "$SHELL")
+
+echo "Setting up shell completion for your $shell shell."
+
+# Generate the completion script
+completion_script=$(python chat.py --show-completion)
+
+if [[ "$shell" == "bash" ]]; then
+    # Install for Bash
+    mkdir -p ~/.bash_completion.d
+    echo "$completion_script" > ~/.bash_completion.d/chat_completion
+    # Ensure completion is sourced
+    if ! grep -q 'source ~/.bash_completion.d/chat_completion' ~/.bashrc; then
+        echo "source ~/.bash_completion.d/chat_completion" >> ~/.bashrc
+    fi
+    echo "Bash completion installed! Please restart your terminal or run 'source ~/.bashrc' to activate."
+
+elif [[ "$shell" == "zsh" ]]; then
+    # Install for Zsh
+    mkdir -p ~/.zsh/completions
+    echo "$completion_script" > ~/.zsh/completions/_chat
+    echo "Zsh completion installed! Please restart your terminal or run 'source ~/.zshrc' to activate."
+
+elif [[ "$shell" == "fish" ]]; then
+    # Install for Fish
+    mkdir -p ~/.config/fish/completions
+    echo "$completion_script" > ~/.config/fish/completions/chat.fish
+    echo "Fish completion installed! Please restart your terminal or run 'source ~/.config/fish/completions/chat.fish' to activate."
+
+else
+    echo "Unsupported shell: $shell"
+fi
