@@ -94,7 +94,6 @@ Alternatively, you can use this code in a separate script to start a new chat se
 ```python
 from opmentis import  endchat, userdata
 
-
 print(endchat())
 ```
 
