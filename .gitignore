@@ -4,3 +4,4 @@ __pycache__/
 llama.log
 models/
 myenv/
+.venv/
