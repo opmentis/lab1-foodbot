@@ -3,6 +3,7 @@ from langchain_community.cache import InMemoryCache
 from langchain.globals import set_llm_cache
 import typer
 from typing import Optional
+import opmentis
 
 # Set LLM cache
 set_llm_cache(InMemoryCache())
@@ -15,42 +16,30 @@ auth_token = None
 # Base URL for the API
 BASE_URL = "https://labfoodbot.opmentis.xyz/api/v1"
 
-def authenticate_or_register(wallet_address: str, stake: int = None) -> Optional[str]:
+
+def authenticate_or_register(wallet_address: str, labid: str, role_type: str, stake: int = None) -> Optional[str]:
     """
     Authenticate or register a user to obtain an authentication token.
     If the user is already registered, a token will be provided without needing the stake.
+    Uses the opmentis library to handle the registration and authentication process.
     """
-    url = f"{BASE_URL}/authenticate_or_register"
-    params = {"wallet_address": wallet_address}
-    payload = {}
-
-    # Only add stake if it's provided
-    if stake is not None:
-        payload["stake"] = stake
-
     try:
-        # Send the request with query params and optional JSON payload
-        response = requests.post(url, params=params, json=payload)
+        # Register the user using the opmentis library
+        register_response = opmentis.register_user(wallet_address, labid, role_type)
         
-        # Check for JSON decoding errors and print raw text if it fails
-        try:
-            response_data = response.json()
-        except requests.exceptions.JSONDecodeError:
-            print(f"Failed to parse JSON response. Raw response text: {response.text}")
-            return None
+        # Extract the access token from the response
+        global auth_token
+        auth_token = register_response["registration_response"]["message"]["external_response"].get("access_token")
 
-        # Handle authentication token in response
-        if response.status_code == 200:
-            global auth_token
-            auth_token = response_data.get("access_token")
+        if auth_token:
             print(f"Token: {auth_token}")
             return auth_token
         else:
-            print(f"Failed to authenticate: {response.status_code} - {response_data}")
+            print("Authentication failed or user not registered.")
             return None
 
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
+    except Exception as e:
+        print(f"An error occurred during authentication or registration: {e}")
         return None
 
 def get_headers():
@@ -142,37 +131,43 @@ def initiate_chat(wallet_address: str, function):
 
     return {"message": "Chat session ended", "response": response_messages}
 
-@app.command()
+@app.command("chat")
 def chat(
-    function: str, 
-    wallet_address: str, 
+    function: str = typer.Argument(..., help="The model to use ('Openai' or 'Gpt4all')."),
+    wallet_address: str = typer.Argument(..., help="The wallet address to associate with the chat."),
+    labid: str = typer.Option(..., "--labid", help="The unique ID of the lab."),
+    role_type: str = typer.Option(..., "--role-type", help="The role type, e.g., 'miner' or 'validator'."),
     stake: Optional[int] = typer.Option(None, help="Stake amount for new users"),
     api_key: str = typer.Option(None, help="OpenAI API key for Openai function")
 ):
     """
-    Initiates a chat session with the specified function and wallet address.
+    Register or authenticate a user and initiate a chat session.
 
     Args:
         function (str): The model to use ('Openai' or 'Gpt4all').
         wallet_address (str): The wallet address to associate with the chat.
+        labid (str): The lab ID.
+        role_type (str): The role type ('miner' or 'validator').
         stake (Optional[int]): Stake amount for registration (only required if the user is not registered).
         api_key (str, optional): The OpenAI API key. Required for the Openai function.
     """
-    # Authenticate or register the user and get the auth token
-    token = authenticate_or_register(wallet_address, stake)
+    # Step 1: Authenticate or register the user
+    token = authenticate_or_register(wallet_address, labid, role_type, stake)
     if not token:
         print("Authentication failed. Unable to proceed with chat.")
         return
     
-    # Initiate chat based on function type
-    if function == "Openai":
+    # Step 2: Initiate chat based on function type
+    if function.lower() == "openai":
         if not api_key:
             raise typer.BadParameter("OpenAI API key is required for the Openai function.")
         initiate_chat(wallet_address, function=lambda apimessage: openai_chat(apimessage, openai_api_key=api_key))
-    elif function == "Gpt4all":
+    elif function.lower() == "gpt4all":
         initiate_chat(wallet_address, function=gpt4all_chat)
     else:
-        raise typer.BadParameter("Function must be 'Openai' or 'Gpt4all'.")
+        raise typer.BadParameter("Function must be 'openai' or 'gpt4all'.")
+
+
 
 if __name__ == "__main__":
     app()

@@ -53,16 +53,39 @@ chmod +x download_model.sh
 
 # Usage
 
-### Registering a Miner
+#### Using CLI command
+```python
+python chat.py chat [Function_Name] [Wallet_Address] --labid [Lab_ID] --role-type [Role_Type]  --api-key [OpenAI_API_Key]
+```
+
+#### Using python
+
+```bash
+pip install opmentis
+```
+
+# Usage
+
+### Registering as Miner
 To register a new user as a miner:
 
-```python
-from opmentis import register_miners
 
-# Example: Registering a miner
-miner_wallet_address = "miner_wallet_address"
-miner = register_miners(wallet_address=miner_wallet_address)
-print("Miner Registered:", miner)
+
+```python
+from opmentis import get_active_lab, register_user
+
+# Fetch active lab information
+active_lab = get_active_lab()
+print("Active Lab Information:", active_lab)
+
+
+# Register a user as a miner
+wallet_address = "your_wallet_address"
+labid = "your_lab_id"
+role_type = "miner"
+register_response = register_user(wallet_address, labid, role_type)
+print("Registration Response:", register_response)
+
 ```
 ### Check your data
 To check miners data:
